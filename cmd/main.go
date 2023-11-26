@@ -6,28 +6,35 @@ import (
 
 	"github.com/tothbence9922/gotodo/internal/hello"
 	status "github.com/tothbence9922/gotodo/internal/status/model"
-	todo "github.com/tothbence9922/gotodo/internal/todo/model"
-	todolist "github.com/tothbence9922/gotodo/internal/todoList/model"
+	"github.com/tothbence9922/gotodo/internal/todo"
+	todoModel "github.com/tothbence9922/gotodo/internal/todo/model"
+	"github.com/tothbence9922/gotodo/internal/todolist"
 )
 
 func main() {
-	todoInstance := todo.Todo{Id: uint64(0), Status: status.TODO, Title: "First todo", Description: "Description is here."}
-
-	todoBin, err := json.Marshal(todoInstance)
+	todoInstance, err := todo.Create(uint64(0), "First todo", "Description is here.", status.TODO)
 
 	if err == nil {
-		fmt.Println(string(todoBin))
-	}
+		todoBin, err := json.Marshal(todoInstance)
 
-	todoArray := make([]todo.Todo, 0)
-	todoArray = append(todoArray, todoInstance)
+		if err == nil {
+			fmt.Println(string(todoBin))
 
-	todoList := todolist.TodoList{Todos: todoArray, Title: "First list"}
+			todoArray := make([]todoModel.Todo, 0)
+			todoArray = append(todoArray, *todoInstance)
 
-	todoListBin, err := json.Marshal(todoList)
+			todoList, err := todolist.Create("First list")
 
-	if err == nil {
-		fmt.Println(string(todoListBin))
+			if err == nil {
+				todoList.Todos = todoArray
+
+				todoListBin, err := json.Marshal(todoList)
+
+				if err == nil {
+					fmt.Println(string(todoListBin))
+				}
+			}
+		}
 	}
 
 	greeting, err := hello.Hello("World!")
